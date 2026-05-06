@@ -1,6 +1,10 @@
 ﻿@using DictionaryLF.Models
 @model DictionaryResponse
 
+@{
+    var jsonModel = System.Text.Json.JsonSerializer.Serialize(Model);
+}
+
 <div class="container py-5">
 
     <div class="text-center mb-5">
@@ -98,3 +102,31 @@
         <p class="text-muted">Palavras já descobertas hoje</p>
     </div>
 </div>
+
+<script>
+
+    function addWordToHistory() {
+        const modelData = @Html.Raw(jsonModel);
+
+        // Tenta recuperar os dados
+        let allWords;
+        try {
+            allWords = JSON.parse(localStorage.getItem("words")) || [];
+        } catch {
+            allWords = [];
+        }
+
+        console.log("modelData:", modelData);
+        console.log("allWords:", allWords);
+
+        const exists = allWords.some(x => JSON.stringify(x) === JSON.stringify(modelData));
+        if (exists) return;
+
+        allWords.push(modelData);
+        localStorage.setItem("words", JSON.stringify(allWords));
+
+        console.log("Adicionou no local storage");
+    }
+
+    addWordToHistory();
+</script>
