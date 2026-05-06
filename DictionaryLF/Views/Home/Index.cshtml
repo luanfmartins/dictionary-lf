@@ -1,0 +1,100 @@
+﻿@using DictionaryLF.Models
+@model DictionaryResponse
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">📚 Dictionary</h1>
+        <p class="text-muted">Pesquise palavras em inglês</p>
+    </div>
+
+    <form method="post" asp-controller="Home" asp-action="Search" class="row justify-content-center mb-5">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" name="word" class="form-control" placeholder="Digite a palavra..." />
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null)
+    {
+        <div class="card shadow-sm p-4">
+
+            <h2 class="mb-3 text-primary">@Model.Word</h2>
+
+            <h5 class="mt-4">🔊 Pronúncia</h5>
+            @foreach (var phonetic in Model.Phonetics)
+            {
+                <div class="mb-2">
+                    @if (!string.IsNullOrEmpty(phonetic.Text))
+                    {
+                        <span class="me-2 text-muted">Fonética: @phonetic.Text</span>
+                    }
+
+                </div>
+                <div class="row mb-3">
+                    @if (!string.IsNullOrEmpty(phonetic.Audio))
+                    {
+                        <audio class="col-md-6" controls>
+                            <source src="@phonetic.Audio" type="audio/mpeg" />
+                        </audio>
+                    }
+                </div>
+            }
+
+            <h5 class="mt-4">📖 Significados</h5>
+
+            @foreach (var meaning in Model.Meanings)
+            {
+                <div class="mt-3">
+                    <span class="badge bg-secondary mb-2">@meaning.PartOfSpeech</span>
+
+                    <ul class="list-group">
+                        @foreach (var def in meaning.Definitions)
+                        {
+                            <li class="list-group-item">
+                                <p class="mb-1">@def.DefinitionText</p>
+
+                                @if (def.SynonymsList != null && def.SynonymsList.Any())
+                                {
+                                    <small class="text-muted">
+                                        <strong>Sinônimos:</strong> @string.Join(", ", def.SynonymsList)
+                                    </small>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(def.Example))
+                                {
+                                    <div class="mt-1">
+                                        <small class="text-success">
+                                            Exemplo: "@def.Example"
+                                        </small>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="text-center text-muted">
+            <p>Nenhum resultado encontrado</p>
+        </div>
+    }
+
+
+
+</div>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <div>
+            <i class="fa fs-3 fa-history"></i>
+            <h1 class="fw-bold">Histórico</h1>
+        </div>
+        <p class="text-muted">Palavras já descobertas hoje</p>
+    </div>
+</div>
